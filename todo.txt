@@ -1,0 +1,4 @@
+- Drag to move rows up and down
+- Delete rows
+- Save colours and themes to JSON and CSV
+- Dimly colour input backgrounds to match colours

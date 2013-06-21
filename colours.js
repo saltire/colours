@@ -4,22 +4,22 @@ $.fn.extend({
 		g /= 255;
 		b /= 255;
 
-		var minRGB = Math.min(r, g, b);
-		var maxRGB = Math.max(r, g, b);
+		var min = Math.min(r, g, b);
+		var max = Math.max(r, g, b);
 
-		if (minRGB == maxRGB) {
+		if (min == max) {
 			var h = 0;
 			var s = 0;
-			var v = Math.floor(minRGB * 100);
+			var v = Math.floor(min * 100);
 
 		} else {
-			var d = (r == minRGB) ? g - b : ((b == minRGB) ? r - g : b - r);
-			var h = (r == minRGB) ? 3 : ((b == minRGB) ? 1 : 5);
-			var c = maxRGB - minRGB;
+			var dif = (r == min) ? g - b : ((b == min) ? r - g : b - r);
+			var hue = (r == min) ? 3 : ((b == min) ? 1 : 5);
+			var chr = max - min;
 			
-			var h = Math.floor((h - d / c) * 60);
-			var s = Math.floor(c / maxRGB * 100);
-			var v = Math.floor(maxRGB * 100);
+			var h = Math.floor((hue - dif / chr) * 60);
+			var s = Math.floor(chr / max * 100);
+			var v = Math.floor(max * 100);
 		}
 		
 		$(this).find('.h').attr('value', h).val(h);
@@ -39,6 +39,7 @@ $.fn.extend({
 	
 	setColour: function(hex) {
 		$(this).find('.colour').css('background', hex);
+		
 	}
 });
 
@@ -63,6 +64,28 @@ $(function() {
 			.find('input').val('').attr('value', '').end()
 			.find('.colour').css('background-color', 'transparent');
 		return false;
+	});
+	
+	
+	// arrow key on number field
+	
+	$('table').on('keydown', '.number', function(e) {
+		if (e.which == 38 || e.which == 40) {
+			var current = $(this).val() == '' ? 0 : parseInt($(this).val());
+			var add = e.which == 38 ? 1 : -1;
+
+			if ($(this).hasClass('h')) {
+				var newval = (current + add + 360) % 360;
+				
+			} else {
+				var max = $(this).hasClass('s') || $(this).hasClass('v') ?
+						100 : 255;
+				var newval = Math.max(0, Math.min(current + add, max));
+			}
+			
+			$(this).attr('value', newval).val(newval);
+			$(this).change();
+		}
 	});
 	
 	
@@ -165,7 +188,7 @@ $(function() {
 			var rgb;
 			
 			if (s === 0) {
-				rgb = [v, v, v]
+				rgb = [v, v, v];
 			} else {
 				i = Math.floor(h);
 				data = [v * (1 - s),
