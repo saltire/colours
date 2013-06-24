@@ -38,36 +38,35 @@ $.fn.extend({
 	},
 	
 	setColour: function(hex) {
-		$(this).find('.colour').css('background', hex);
-		
+		$(this).find('.colour').css(
+				{visibility: 'visible', backgroundColor: hex});
 	}
 });
 
 
 function rgb2hex(r, g, b) {
-	var hex = '#';
-	[r, g, b].forEach(function(c) {
-		var str = c.toString(16);
-		hex += '00'.slice(str.length) + str;
-	});
-	return hex
+	var str = (r * 65536 + g * 256 + b).toString(16);
+	return '#' + '000000'.slice(str.length) + str;
 }
 
 
 $(function() {
 	
-	// add button clicked
+	// left/right arrow on field
 	
-	$('.add').click(function() {
-		// add new blank row
-		$('table tr:last').clone().appendTo('table')
-			.find('input').val('').attr('value', '').end()
-			.find('.colour').css('background-color', 'transparent');
-		return false;
+	$('table').on('keydown', 'input', function(e) {
+		if (e.which == 37 || e.which == 39) {
+			var $fields = $(this).closest('tr').find('input');
+			var i = $fields.index($(this));
+			var tgt = i + (e.which == 37 ? -1 : 1);
+			if (tgt >= 0 && tgt < $fields.length) {
+				$fields.eq(tgt).focus();
+			}
+		}
 	});
 	
 	
-	// arrow key on number field
+	// up/down arrow on number field
 	
 	$('table').on('keydown', '.number', function(e) {
 		if (e.which == 38 || e.which == 40) {
@@ -85,6 +84,7 @@ $(function() {
 			
 			$(this).attr('value', newval).val(newval);
 			$(this).change();
+
 		}
 	});
 	
@@ -220,6 +220,49 @@ $(function() {
 			$(this).closest('tr').setHex(hex);
 			$(this).closest('tr').setColour(hex);
 		}
-		
+	});
+	
+	
+	// add button clicked
+	
+	$('.add').click(function() {
+		// add new blank row
+		var num = $('table tr:last .name').attr('name').slice(4);
+		var sl = num.length;
+		var i = parseInt(num) + 1;
+		$('table tr:last').clone().appendTo('table')
+			.find('input').val('').attr('value', '').each(function() {
+				$(this).attr('name', $(this).attr('name').slice(0, -sl) + i);
+			}).end()
+			.find('.colour').css(
+					{visibility: 'hidden', backgroundColor: ''});
+		return false;
+	});
+	
+	
+	// inputs change: enable save button
+	
+	$('table').on('change', 'input', function() {
+		$('.save').addClass('active');
+	});
+	
+	
+	// save button clicked
+	
+	$('.save').click(function() {
+		if ($(this).hasClass('active')) {
+			var colours = $('.colour').filter(function() {
+				return $(this).css('visibility') == 'visible';
+			}).closest('tr').find('input').serializeArray();
+			
+			$.post('save.php', {colours: colours}, function(data) {
+				if (data == 1) {
+					$('.save').removeClass('active');
+				}
+			});
+		}
 	});
 });
+
+
+

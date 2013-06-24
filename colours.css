@@ -2,8 +2,8 @@ body { text-align: center; font-size: 20px; font-family: sans-serif; }
 
 table { margin: 20px auto; border-spacing: 5px; }
 td { padding: 0; }
-.colour { width: 60px; }
-.sep { width: 3px; }
+.colour { width: 60px; visibility: hidden; }
+.sep { width: 5px; }
 
 input { margin: 0; padding: 10px; border: 0; outline: 0; background: #f4f4f4;
 	font-size: 20px; }
@@ -12,5 +12,8 @@ input:focus { background: #e8e8e8; }
 .hex { width: 120px; }
 .number { width: 60px; text-align: center; }
 
-.add { display: inline-block; padding: 10px 20px; background: #f4f4f4; }
-.add:hover { background: #ccc; color: #fff; cursor: pointer; }
+.buttons a { display: inline-block; margin: 0 5px; padding: 10px 15px; background: #f4f4f4;
+	line-height: 1.25em; }
+.buttons a { color: #ccc; }
+.buttons a.active { color: #000; }
+.buttons a.active:hover { background: #ccc; color: #fff; cursor: pointer; }
