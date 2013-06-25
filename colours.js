@@ -24,22 +24,26 @@ $.fn.extend({
 		
 		$(this).find('.h').attr('value', h).val(h);
 		$(this).find('.s').attr('value', s).val(s);
-		$(this).find('.v').attr('value', v).val(v);
+		$(this).find('.v').attr('value', v).val(v);		
+		return $(this);
 	},
 	
 	setRGB: function(r, g, b) {
 		$(this).find('.r').attr('value', r).val(r);
 		$(this).find('.g').attr('value', g).val(g);
 		$(this).find('.b').attr('value', b).val(b);
+		return $(this);
 	},
 	
 	setHex: function(hex) {
 		$(this).find('.hex').attr('value', hex).val(hex);
+		return $(this);
 	},
 	
 	setColour: function(hex) {
 		$(this).find('.colour').css(
 				{visibility: 'visible', backgroundColor: hex});
+		return $(this);
 	}
 });
 
@@ -51,6 +55,13 @@ function rgb2hex(r, g, b) {
 
 
 $(function() {
+	
+	var $blank = $('table tr').eq(1).clone()
+		.find('input').val('').attr('value', '').each(function() {
+			$(this).attr('name', $(this).attr('name').slice(0, -1));
+		}).end()
+		.find('.colour').css({visibility: 'hidden', backgroundColor: ''}).end();
+
 	
 	// left/right arrow on field
 	
@@ -112,9 +123,8 @@ $(function() {
 			}
 			
 			// update rgb, hsv, colour
-			$(this).closest('tr').setRGB(r, g, b);
-			$(this).closest('tr').setHSV(r, g, b);
-			$(this).closest('tr').setColour(hex);
+			$(this).closest('tr')
+				.setRGB(r, g, b).setHSV(r, g, b).setColour(hex);
 			
 		} else {
 			// reset contents to value
@@ -148,9 +158,8 @@ $(function() {
 
 			// update hex, hsv, colour
 			var hex = rgb2hex(r, g, b);
-			$(this).closest('tr').setHex(hex);
-			$(this).closest('tr').setHSV(r, g, b);
-			$(this).closest('tr').setColour(hex);
+			$(this).closest('tr')
+				.setHex(hex).setHSV(r, g, b).setColour(hex);
 		}
 	});
 	
@@ -216,9 +225,8 @@ $(function() {
 
 			// update rgb, hex, colour
 			var hex = rgb2hex(r, g, b);
-			$(this).closest('tr').setRGB(r, g, b);
-			$(this).closest('tr').setHex(hex);
-			$(this).closest('tr').setColour(hex);
+			$(this).closest('tr')
+				.setRGB(r, g, b).setHex(hex).setColour(hex);
 		}
 	});
 	
@@ -227,15 +235,10 @@ $(function() {
 	
 	$('.add').click(function() {
 		// add new blank row
-		var num = $('table tr:last .name').attr('name').slice(4);
-		var sl = num.length;
-		var i = parseInt(num) + 1;
-		$('table tr:last').clone().appendTo('table')
-			.find('input').val('').attr('value', '').each(function() {
-				$(this).attr('name', $(this).attr('name').slice(0, -sl) + i);
-			}).end()
-			.find('.colour').css(
-					{visibility: 'hidden', backgroundColor: ''});
+		var i = parseInt($('table tr:last .name').attr('name').slice(4)) + 1;
+		$blank.clone().appendTo('table').find('input').each(function() {
+			$(this).attr('name', $(this).attr('name') + i);
+		});
 		return false;
 	});
 	
@@ -262,6 +265,18 @@ $(function() {
 			});
 		}
 	});
+	
+	
+	// delete row button clicked
+	
+	$('table').on('click', '.delete', function() {
+		$(this).closest('tr').remove();
+		if ($('table tr').length == 1) {
+			$blank.clone().appendTo('table').find('input').each(function() {
+				$(this).attr('name', $(this).attr('name') + 0);
+			});
+		}
+	})
 });
 
 
