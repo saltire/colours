@@ -1,4 +1,24 @@
 $.fn.extend({
+	setColour: function(hex) {
+		$(this).find('.colour').css(
+				{visibility: 'visible', backgroundColor: hex});
+		return $(this);
+	},
+	
+	setHex: function(r, g, b) {
+		var str = (r * 65536 + g * 256 + b).toString(16);
+		var hex = '#' + '000000'.slice(str.length) + str;
+		$(this).find('.hex input').attr('value', hex).val(hex);
+		return $(this);
+	},
+	
+	setRGB: function(r, g, b) {
+		$(this).find('.r').attr('value', r).val(r);
+		$(this).find('.g').attr('value', g).val(g);
+		$(this).find('.b').attr('value', b).val(b);
+		return $(this);
+	},
+	
 	setHSV: function(r, g, b) {
 		r /= 255;
 		g /= 255;
@@ -26,35 +46,19 @@ $.fn.extend({
 		$(this).find('.s').attr('value', s).val(s);
 		$(this).find('.v').attr('value', v).val(v);		
 		return $(this);
-	},
-	
-	setRGB: function(r, g, b) {
-		$(this).find('.r').attr('value', r).val(r);
-		$(this).find('.g').attr('value', g).val(g);
-		$(this).find('.b').attr('value', b).val(b);
-		return $(this);
-	},
-	
-	setHex: function(hex) {
-		$(this).find('.hex').attr('value', hex).val(hex);
-		return $(this);
-	},
-	
-	setColour: function(hex) {
-		$(this).find('.colour').css(
-				{visibility: 'visible', backgroundColor: hex});
-		return $(this);
 	}
 });
 
 
-function rgb2hex(r, g, b) {
-	var str = (r * 65536 + g * 256 + b).toString(16);
-	return '#' + '000000'.slice(str.length) + str;
-}
-
-
 $(function() {
+	
+	$('table').sortable({
+		items: 'tr:not(:first)',
+		handle: '.handle',
+		update: function() {
+			$('.save').addClass('active');
+		}
+	});
 	
 	var $blank = $('table tr').eq(1).clone()
 		.find('input').val('').attr('value', '').each(function() {
@@ -79,7 +83,7 @@ $(function() {
 	
 	// up/down arrow on number field
 	
-	$('table').on('keydown', '.number', function(e) {
+	$('table').on('keydown', '.number input', function(e) {
 		if (e.which == 38 || e.which == 40) {
 			var current = $(this).val() == '' ? 0 : parseInt($(this).val());
 			var add = e.which == 38 ? 1 : -1;
@@ -102,29 +106,26 @@ $(function() {
 	
 	// hex value changed
 	
-	$('table').on('change', '.hex', function() {
+	$('table').on('change', '.hex input', function() {
 		// check for valid hex in contents
 		if (/^#?([0-9a-f]{3}){1,2}$/i.test($(this).val())) {
 			// generate hex value
 			var hex = '#' + $(this).val().replace('#', '');
 			
-			// update value with contents
-			$(this).attr('value', hex).val(hex);
-			
-			// update rgb
-			if ($(this).val().length == 4) {
-				var r = parseInt(hex.slice(1, 2), 16);
-				var g = parseInt(hex.slice(2, 3), 16);
-				var b = parseInt(hex.slice(3, 4), 16);
+			// calculate rgb
+			if (hex.length == 4) {
+				var r = parseInt(hex.slice(1, 2) + hex.slice(1, 2), 16);
+				var g = parseInt(hex.slice(2, 3) + hex.slice(2, 3), 16);
+				var b = parseInt(hex.slice(3, 4) + hex.slice(3, 4), 16);
 			} else {
 				var r = parseInt(hex.slice(1, 3), 16);
 				var g = parseInt(hex.slice(3, 5), 16);
 				var b = parseInt(hex.slice(5, 7), 16);
 			}
 			
-			// update rgb, hsv, colour
+			// update fields
 			$(this).closest('tr')
-				.setRGB(r, g, b).setHSV(r, g, b).setColour(hex);
+				.setColour(hex).setHex(r, g, b).setRGB(r, g, b).setHSV(r, g, b);
 			
 		} else {
 			// reset contents to value
@@ -156,10 +157,9 @@ $(function() {
 			var g = parseInt($colours.filter('.g').val());
 			var b = parseInt($colours.filter('.b').val());
 
-			// update hex, hsv, colour
-			var hex = rgb2hex(r, g, b);
+			// update fields
 			$(this).closest('tr')
-				.setHex(hex).setHSV(r, g, b).setColour(hex);
+				.setColour(hex).setHex(r, g, b).setHSV(r, g, b);
 		}
 	});
 	
@@ -223,10 +223,9 @@ $(function() {
 			var g = Math.floor(rgb[1] * 255);
 			var b = Math.floor(rgb[2] * 255);
 
-			// update rgb, hex, colour
-			var hex = rgb2hex(r, g, b);
+			// update fields
 			$(this).closest('tr')
-				.setRGB(r, g, b).setHex(hex).setColour(hex);
+				.setColour(hex).setHex(r, g, b).setRGB(r, g, b);
 		}
 	});
 	
@@ -235,7 +234,8 @@ $(function() {
 	
 	$('.add').click(function() {
 		// add new blank row
-		var i = parseInt($('table tr:last .name').attr('name').slice(4)) + 1;
+		var i = parseInt($('table tr:last .name input').attr('name').slice(4))
+			+ 1;
 		$blank.clone().appendTo('table').find('input').each(function() {
 			$(this).attr('name', $(this).attr('name') + i);
 		});
@@ -269,7 +269,7 @@ $(function() {
 	
 	// delete row button clicked
 	
-	$('table').on('click', '.delete', function() {
+	$('table').on('click', '.delete a', function() {
 		$(this).closest('tr').remove();
 		if ($('table tr').length == 1) {
 			$blank.clone().appendTo('table').find('input').each(function() {

@@ -1,31 +1,33 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Colours</title>
 		<meta charset='utf-8'>
 		<link rel='stylesheet' type='text/css' href='colours.css' />
 		<script type='text/javascript' src='jquery-1.10.1.min.js'></script>
+		<script type='text/javascript' src='jquery-ui-1.10.3.sortable.min.js'></script>
 		<script type='text/javascript' src='colours.js'></script>
 	</head>
 	<body>
 		<table>
 			<tr>
-				<th></th>
-				<th></th>
+				<th class='handle'></th>
+				<th class='colour'></th>
 				<th class='sep'></th>
-				<th>Name</th>
+				<th class='name'>Name</th>
 				<th class='sep'></th>
-				<th>Hex</th>
+				<th class='hex'>Hex</th>
 				<th class='sep'></th>
-				<th>R</th>
-				<th>G</th>
-				<th>B</th>
+				<th class='number'>R</th>
+				<th class='number'>G</th>
+				<th class='number'>B</th>
 				<th class='sep'></th>
-				<th>H</th>
-				<th>S</th>
-				<th>V</th>
+				<th class='number'>H</th>
+				<th class='number'>S</th>
+				<th class='number'>V</th>
 				<th class='sep'></th>
-				<th></th>
-				<th></th>
+				<th class='colour'></th>
+				<th class='delete'></th>
 			</tr>
 <?php
 $colours = json_decode(file_get_contents('colours.json'), 1)
@@ -45,23 +47,23 @@ foreach ($colours as $i => $colour) {
 	}
 ?>
 			<tr>
-				<td></td>
+				<td class='handle'><a>&#x2591;</a></td>
 				<td class='colour'<?php echo $hex ? " style='visibility: visible; background-color: $hex;'" : ''; ?>></td>
 				<td class='sep'></td>
-				<td><input type='text' name='name<?php echo $i; ?>' maxlength='50' class='name' value='<?php echo $colour['name']; ?>' /></td>
+				<td class='name'><input type='text' name='name<?php echo $i; ?>' maxlength='50' value='<?php echo $colour['name']; ?>' /></td>
 				<td class='sep'></td>
-				<td><input type='text' name='hex<?php echo $i; ?>' maxlength='7' class='hex' value='<?php echo $hex; ?>' /></td>
+				<td class='hex'><input type='text' name='hex<?php echo $i; ?>' maxlength='7' value='<?php echo $hex; ?>' /></td>
 				<td class='sep'></td>
-				<td><input type='text' name='r<?php echo $i; ?>' maxlength='3' class='number r' value='<?php echo $colour['red']; ?>' /></td>
-				<td><input type='text' name='g<?php echo $i; ?>' maxlength='3' class='number g' value='<?php echo $colour['green']; ?>' /></td>
-				<td><input type='text' name='b<?php echo $i; ?>' maxlength='3' class='number b' value='<?php echo $colour['blue']; ?>' /></td>
+				<td class='number'><input type='text' name='r<?php echo $i; ?>' maxlength='3' class='r' value='<?php echo $colour['red']; ?>' /></td>
+				<td class='number'><input type='text' name='g<?php echo $i; ?>' maxlength='3' class='g' value='<?php echo $colour['green']; ?>' /></td>
+				<td class='number'><input type='text' name='b<?php echo $i; ?>' maxlength='3' class='b' value='<?php echo $colour['blue']; ?>' /></td>
 				<td class='sep'></td>
-				<td><input type='text' name='h<?php echo $i; ?>' maxlength='3' class='number h' value='<?php echo $colour['hue']; ?>' /></td>
-				<td><input type='text' name='s<?php echo $i; ?>' maxlength='3' class='number s' value='<?php echo $colour['sat']; ?>' /></td>
-				<td><input type='text' name='v<?php echo $i; ?>' maxlength='3' class='number v' value='<?php echo $colour['val']; ?>' /></td>
+				<td class='number'><input type='text' name='h<?php echo $i; ?>' maxlength='3' class='h' value='<?php echo $colour['hue']; ?>' /></td>
+				<td class='number'><input type='text' name='s<?php echo $i; ?>' maxlength='3' class='s' value='<?php echo $colour['sat']; ?>' /></td>
+				<td class='number'><input type='text' name='v<?php echo $i; ?>' maxlength='3' class='v' value='<?php echo $colour['val']; ?>' /></td>
 				<td class='sep'></td>
 				<td class='colour'<?php echo $hex ? " style='visibility: visible; background-color: $hex;'" : ''; ?>></td>
-				<td><a class='delete'>&#x2715;</a></td>
+				<td class='delete'><a>&#x2715;</a></td>
 			</tr>
 <?php } ?>
 		</table>
