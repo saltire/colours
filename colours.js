@@ -1,14 +1,16 @@
 $.fn.extend({
-	setColour: function(hex) {
-		$(this).find('.colour').css(
-				{visibility: 'visible', backgroundColor: hex});
+	setColour: function(r, g, b) {
+		$(this).find('.colour').css({
+			visibility: 'visible',
+			backgroundColor: 'rgb(' + r + ',' + g + ',' + b + ')'
+		});
 		return $(this);
 	},
 	
 	setHex: function(r, g, b) {
 		var str = (r * 65536 + g * 256 + b).toString(16);
 		var hex = '#' + '000000'.slice(str.length) + str;
-		$(this).find('.hex input').attr('value', hex).val(hex);
+		$(this).find('.hex').attr('value', hex).val(hex);
 		return $(this);
 	},
 	
@@ -52,15 +54,14 @@ $.fn.extend({
 
 $(function() {
 	
-	$('table').sortable({
-		items: 'tr:not(:first)',
+	$('.colours').sortable({
 		handle: '.handle',
 		update: function() {
 			$('.save').addClass('active');
 		}
 	});
 	
-	var $blank = $('table tr').eq(1).clone()
+	var $blank = $('.row:first').clone()
 		.find('input').val('').attr('value', '').each(function() {
 			$(this).attr('name', $(this).attr('name').slice(0, -1));
 		}).end()
@@ -69,7 +70,7 @@ $(function() {
 	
 	// left/right arrow on field
 	
-	$('table').on('keydown', 'input', function(e) {
+	$('.colours').on('keydown', 'input', function(e) {
 		if (e.which == 37 || e.which == 39) {
 			var $fields = $(this).closest('tr').find('input');
 			var i = $fields.index($(this));
@@ -83,7 +84,7 @@ $(function() {
 	
 	// up/down arrow on number field
 	
-	$('table').on('keydown', '.number input', function(e) {
+	$('.colours').on('keydown', '.number', function(e) {
 		if (e.which == 38 || e.which == 40) {
 			var current = $(this).val() == '' ? 0 : parseInt($(this).val());
 			var add = e.which == 38 ? 1 : -1;
@@ -106,7 +107,7 @@ $(function() {
 	
 	// hex value changed
 	
-	$('table').on('change', '.hex input', function() {
+	$('.colours').on('change', '.hex', function() {
 		// check for valid hex in contents
 		if (/^#?([0-9a-f]{3}){1,2}$/i.test($(this).val())) {
 			// generate hex value
@@ -124,8 +125,8 @@ $(function() {
 			}
 			
 			// update fields
-			$(this).closest('tr')
-				.setColour(hex).setHex(r, g, b).setRGB(r, g, b).setHSV(r, g, b);
+			$(this).parent().setColour(r, g, b).setHex(r, g, b)
+				.setRGB(r, g, b).setHSV(r, g, b);
 			
 		} else {
 			// reset contents to value
@@ -136,10 +137,10 @@ $(function() {
 	
 	// rgb values changed
 	
-	$('table').on('change', '.r, .g, .b', function() {
-		var $colours = $(this).closest('tr').find('.r, .g, .b');
+	$('.colours').on('change', '.r, .g, .b', function() {
+		var $rgb = $(this).parent().find('.r, .g, .b');
 		
-		if ($colours.each(function() {
+		if ($rgb.each(function() {
 			// test if contents are a valid number
 			if (/^\d{1,3}$/.test($(this).val())) {
 				// clamp it and set new value
@@ -153,23 +154,22 @@ $(function() {
 			return $(this).val() == '';
 		}).length === 0) {
 			
-			var r = parseInt($colours.filter('.r').val());
-			var g = parseInt($colours.filter('.g').val());
-			var b = parseInt($colours.filter('.b').val());
+			var r = parseInt($rgb.filter('.r').val());
+			var g = parseInt($rgb.filter('.g').val());
+			var b = parseInt($rgb.filter('.b').val());
 
 			// update fields
-			$(this).closest('tr')
-				.setColour(hex).setHex(r, g, b).setHSV(r, g, b);
+			$(this).parent().setColour(r, g, b).setHex(r, g, b).setHSV(r, g, b);
 		}
 	});
 	
 	
 	// hsv values changed
 	
-	$('table').on('change', '.h, .s, .v', function() {
-		var $colours = $(this).closest('tr').find('.h, .s, .v');
+	$('.colours').on('change', '.h, .s, .v', function() {
+		var $hsv = $(this).parent().find('.h, .s, .v');
 		
-		if ($colours.each(function() {
+		if ($hsv.each(function() {
 			// test if contents are a valid number
 			if (/^\d{1,3}$/.test($(this).val())) {
 				// set new value
@@ -191,9 +191,9 @@ $(function() {
 			return $(this).val() == '';
 		}).length === 0) {
 			
-			var h = parseInt($colours.filter('.h').val()) / 60;
-			var s = parseInt($colours.filter('.s').val()) / 100;
-			var v = parseInt($colours.filter('.v').val()) / 100;
+			var h = parseInt($hsv.filter('.h').val()) / 60;
+			var s = parseInt($hsv.filter('.s').val()) / 100;
+			var v = parseInt($hsv.filter('.v').val()) / 100;
 			var rgb;
 			
 			if (s === 0) {
@@ -224,8 +224,7 @@ $(function() {
 			var b = Math.floor(rgb[2] * 255);
 
 			// update fields
-			$(this).closest('tr')
-				.setColour(hex).setHex(r, g, b).setRGB(r, g, b);
+			$(this).parent().setColour(r, g, b).setHex(r, g, b).setRGB(r, g, b);
 		}
 	});
 	
@@ -234,9 +233,9 @@ $(function() {
 	
 	$('.add').click(function() {
 		// add new blank row
-		var i = parseInt($('table tr:last .name input').attr('name').slice(4))
+		var i = parseInt($('.row:last .name').attr('name').slice(4))
 			+ 1;
-		$blank.clone().appendTo('table').find('input').each(function() {
+		$blank.clone().appendTo('.colours').find('input').each(function() {
 			$(this).attr('name', $(this).attr('name') + i);
 		});
 		return false;
@@ -245,7 +244,7 @@ $(function() {
 	
 	// inputs change: enable save button
 	
-	$('table').on('change', 'input', function() {
+	$('.colours').on('change', 'input', function() {
 		$('.save').addClass('active');
 	});
 	
@@ -256,9 +255,10 @@ $(function() {
 		if ($(this).hasClass('active')) {
 			var colours = $('.colour').filter(function() {
 				return $(this).css('visibility') == 'visible';
-			}).closest('tr').find('input').serializeArray();
+			}).siblings('input').serializeArray();
 			
 			$.post('save.php', {colours: colours}, function(data) {
+				console.log(data);
 				if (data == 1) {
 					$('.save').removeClass('active');
 				}
@@ -269,10 +269,14 @@ $(function() {
 	
 	// delete row button clicked
 	
-	$('table').on('click', '.delete a', function() {
-		$(this).closest('tr').remove();
-		if ($('table tr').length == 1) {
-			$blank.clone().appendTo('table').find('input').each(function() {
+	$('.colours').on('click', '.delete a', function() {
+		if ($(this).closest('.row').find('.colour')
+				.css('visibility') == 'visible') {
+			$('.save').addClass('active');
+		}
+		$(this).closest('.row').remove();
+		if (!$('.row').length) {
+			$blank.clone().appendTo('.colours').find('input').each(function() {
 				$(this).attr('name', $(this).attr('name') + 0);
 			});
 		}
