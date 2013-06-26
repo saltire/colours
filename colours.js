@@ -233,8 +233,10 @@ $(function() {
 	
 	$('.add').click(function() {
 		// add new blank row
-		var i = parseInt($('.row:last .name').attr('name').slice(4))
-			+ 1;
+		var i = 0;
+		while ($('.colours input[name=name' + i + ']').length > 0) {
+			i++;
+		}
 		$blank.clone().appendTo('.colours').find('input').each(function() {
 			$(this).attr('name', $(this).attr('name') + i);
 		});
