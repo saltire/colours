@@ -1,37 +1,44 @@
 body { text-align: center; font-size: 0; font-family: sans-serif; }
 
 .header { margin: 20px 0 10px; }
-.header div { display: inline-block; margin: 0 3px;
+.header div { display: inline-block; margin: 0 3px; color: #000; opacity: 0.7;
 	font-size: 16px; font-weight: bold; }
+.header .reverse { color: #fff; }
+.header span { display: inline-block; width: 40px; margin: 0; }
 
-.row { height: 45px; margin-bottom: 5px; background: #fff; }
-.row div, .row input { display: inline-block; height: 45px;
-	vertical-align: top; margin: 0 3px; font-size: 20px; }
+.row { height: 45px; margin-bottom: 5px; }
+.row div, .row input { display: inline-block; height: 45px; margin: 0 3px;
+	color: #333; font-size: 20px; vertical-align: top; }
 
-.handle { width: 50px; }
-.colour { width: 60px; visibility: hidden; }
+.colour { width: 60px; margin: 0 6px !important; visibility: hidden; }
 .name { width: 300px; }
 .hex { width: 120px; }
 .number { width: 60px; }
-.delete { width: 50px; }
 
 .name, .hex, .r, .h { margin-left: 6px !important; }
 .name, .hex, .b, .v { margin-right: 6px !important; }
 
-input { width: 100%; padding: 10px; box-sizing: border-box; border: 0; 
-	outline: 0; background: #f4f4f4; font-size: 20px; }
+input { width: 100%; padding: 10px; box-sizing: border-box; border: 0;
+	outline: 0; background: #f4f4f4; font-size: 20px; font-family: sans-serif;
+	border-radius: 5px; opacity: 0.8; }
 input:focus { background: #e8e8e8; }
 .number { text-align: center; }
 
-.row a { display: block; width: 100%; color: #ddd; text-align: center;
-	line-height: 45px; }
-.row a:hover { cursor: pointer; }
-.handle a:hover { color: #000; }
-.delete a:hover { color: #d00; }
+.row a { display: inline-block; height: 25px; width: 25px; margin: 10px 0;
+    border-radius: 5px; color: #000; opacity: 0.8; font-size: 20px;
+    text-align: center; line-height: 25px; }
+.row a.left { margin-right: 15px !important; }
+.row a.right { margin-left: 15px !important; }
+.row a:hover { background: #333; color: #fff; cursor: pointer; }
+.row a.reverse { color: #fff; }
+.row a.reverse:hover { background-color: #fff; color: #000; }
+.row a.handle:hover { cursor: move; }
+.row a.delete:hover { color: #e00; }
 
 .buttons { margin-top: 20px; }
 .buttons a { display: inline-block; margin: 0 6px; padding: 10px 15px;
-	background: #f4f4f4; line-height: 1.25em; font-size: 20px; }
+	border-radius: 5px; background: #f4f4f4; opacity: 0.8;
+    font-size: 20px; line-height: 1.25em; }
 .buttons a { color: #ccc; }
 .buttons a.active { color: #000; }
-.buttons a.active:hover { background: #ccc; color: #fff; cursor: pointer; }
+.buttons a.active:hover { background: #e8e8e8; cursor: pointer; }

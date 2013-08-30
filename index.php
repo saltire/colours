@@ -10,7 +10,7 @@
 	</head>
 	<body>
 		<div class='header'>
-			<div class='handle'></div>
+			<span></span>
 			<div class='colour'></div>
 			<div class='name'>Name</div>
 			<div class='hex'>Hex</div>
@@ -21,7 +21,8 @@
 			<div class='number s'>S</div>
 			<div class='number v'>V</div>
 			<div class='colour'></div>
-			<div class='delete'></div>
+			<span></span>
+			<span></span>
 		</div>
 		<div class='colours'>
 <?php
@@ -42,7 +43,7 @@ foreach ($colours as $i => $colour) {
 	}
 ?>
 			<div class='row'>
-				<div class='handle'><a>&#x2591;</a></div>
+				<a class='handle left' title='move up/down'>&#x2591;</a>
 				<div class='colour'<?php echo $hex ? " style='visibility: visible; background-color: $hex;'" : ''; ?>></div>
 				<input class='name' type='text' name='name<?php echo $i; ?>' maxlength='50' value='<?php echo $colour['name']; ?>' />
 				<input class='hex' type='text' name='hex<?php echo $i; ?>' maxlength='7' value='<?php echo $hex; ?>' />
@@ -53,7 +54,8 @@ foreach ($colours as $i => $colour) {
 				<input class='number s' type='text' name='s<?php echo $i; ?>' maxlength='3' value='<?php echo $colour['sat']; ?>' />
 				<input class='number v' type='text' name='v<?php echo $i; ?>' maxlength='3' value='<?php echo $colour['val']; ?>' />
 				<div class='colour'<?php echo $hex ? " style='visibility: visible; background-color: $hex;'" : ''; ?>></div>
-				<div class='delete'><a>&#x2715;</a></div>
+				<a class='setbkgd right' title='set as background'>&#x25a3;</a>
+				<a class='delete right' title='remove'>&#x2715;</a>
 			</div>
 <?php } ?>
 		</div>

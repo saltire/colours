@@ -54,12 +54,17 @@ $.fn.extend({
 
 $(function() {
 	
+	// init sortable rows
+	
 	$('.colours').sortable({
 		handle: '.handle',
 		update: function() {
 			$('.save').addClass('active');
 		}
 	});
+	
+	
+	// create blank row for cloning
 	
 	var $blank = $('.row:first').clone()
 		.find('input').val('').attr('value', '').each(function() {
@@ -237,8 +242,15 @@ $(function() {
 		while ($('.colours input[name=name' + i + ']').length > 0) {
 			i++;
 		}
-		$blank.clone().appendTo('.colours').find('input').each(function() {
-			$(this).attr('name', $(this).attr('name') + i);
+		$blank.clone().appendTo('.colours').each(function() {
+			$('input', this).each(function() {
+				$(this).attr('name', $(this).attr('name') + i);
+			});
+			
+			// reverse interface colours for dark backgrounds
+			if ($('.reverse').length) {
+				$('a', this).addClass('reverse');
+			}
 		});
 		return false;
 	});
@@ -269,9 +281,26 @@ $(function() {
 	});
 	
 	
+	// background button clicked
+	
+	$('.colours').on('click', '.setbkgd', function() {
+		var $colour = $(this).closest('.row').find('.colour');
+		if ($colour.css('visibility') == 'visible') {
+			$('body').css('background', $colour.css('background-color'));
+			
+			// reverse interface colours for dark backgrounds
+			if (parseInt($colour.siblings('.v').val()) < 50) {
+				$('.row a, .header div').addClass('reverse');
+			} else {
+				$('.row a, .header div').removeClass('reverse');
+			}
+		}
+	});
+	
+	
 	// delete row button clicked
 	
-	$('.colours').on('click', '.delete a', function() {
+	$('.colours').on('click', '.delete', function() {
 		if ($(this).closest('.row').find('.colour')
 				.css('visibility') == 'visible') {
 			$('.save').addClass('active');
